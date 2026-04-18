@@ -18,7 +18,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+
+      - name: 缓存 node_modules
+        id: nm-cache-mac
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-macos-${{ hashFiles('package-lock.json') }}
+
+      - name: 安装前端依赖
+        if: steps.nm-cache-mac.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: 缓存 Rust 工具链
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.rustup/toolchains
+            ~/.rustup/update-hashes
+          key: rustup-macos-stable-${{ hashFiles('.github/workflows/build.yml') }}
 
       - name: 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -30,11 +48,8 @@ jobs:
         with:
           workspaces: src-tauri
 
-      - name: 安装前端依赖
-        run: npm ci
-
       - name: 安装 create-dmg（Tauri bundle_dmg.sh 依赖）
-        run: brew install create-dmg
+        run: command -v create-dmg || brew install create-dmg
 
       - name: 构建 Tauri 应用（Universal Binary）
         run: npm run tauri build -- --bundles dmg,app --target universal-apple-darwin
@@ -63,7 +78,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+
+      - name: 缓存 node_modules
+        id: nm-cache-win
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-windows-${{ hashFiles('package-lock.json') }}
+
+      - name: 安装前端依赖
+        if: steps.nm-cache-win.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: 缓存 Rust 工具链
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.rustup/toolchains
+            ~/.rustup/update-hashes
+          key: rustup-windows-stable-${{ hashFiles('.github/workflows/build.yml') }}
 
       - name: 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -72,9 +105,6 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-
-      - name: 安装前端依赖
-        run: npm ci
 
       - name: 构建 Tauri 应用（仅 nsis 安装包，跳过 icns）
         run: npm run tauri build -- --bundles nsis
