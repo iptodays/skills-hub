@@ -2,7 +2,7 @@
 import type { SkillInfo } from '../types/skill'
 import { Eye, Trash2, Tag, Link } from 'lucide-vue-next'
 
-const props = defineProps<{ skill: SkillInfo }>()
+defineProps<{ skill: SkillInfo }>()
 const emit = defineEmits<{
   view: [skill: SkillInfo]
   delete: [skill: SkillInfo]
