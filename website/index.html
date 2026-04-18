@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills Hub — Agent 技能管理中心</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Lexend+Deca:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════
+       Design tokens — 与桌面端应用完全一致
+    ═══════════════════════════════════════ */
+    :root {
+      --bg:             oklch(0.12 0.013 255);
+      --surface:        oklch(0.17 0.011 255);
+      --elevated:       oklch(0.21 0.013 255);
+      --input:          oklch(0.15 0.01  255);
+      --border:         oklch(0.26 0.018 255);
+      --border-strong:  oklch(0.36 0.02  255);
+      --text:           oklch(0.92 0.009  85);
+      --text-dim:       oklch(0.60 0.013 255);
+      --text-muted:     oklch(0.42 0.01  255);
+      --accent:         oklch(0.77 0.16   65);
+      --accent-hover:   oklch(0.83 0.17   65);
+      --accent-bg:      oklch(0.28 0.08   65);
+      --accent-dim:     oklch(0.22 0.05   65);
+      --danger:         oklch(0.63 0.18   22);
+      --danger-bg:      oklch(0.22 0.07   22);
+      --success:        oklch(0.71 0.16  145);
+
+      --cat-core:       oklch(0.70 0.14 230);
+      --cat-core-bg:    oklch(0.22 0.06 230);
+      --cat-core-bd:    oklch(0.30 0.08 230);
+      --cat-frontend:   oklch(0.73 0.14 165);
+      --cat-frontend-bg:oklch(0.20 0.06 165);
+      --cat-frontend-bd:oklch(0.28 0.08 165);
+      --cat-desktop:    oklch(0.70 0.14 310);
+      --cat-desktop-bg: oklch(0.22 0.06 310);
+      --cat-desktop-bd: oklch(0.30 0.08 310);
+      --cat-design:     oklch(0.77 0.16  65);
+      --cat-design-bg:  oklch(0.22 0.06  65);
+      --cat-design-bd:  oklch(0.30 0.08  65);
+      --cat-backend:    oklch(0.70 0.14 200);
+      --cat-backend-bg: oklch(0.20 0.06 200);
+      --cat-backend-bd: oklch(0.28 0.08 200);
+
+      --font-display: 'Lexend Deca', sans-serif;
+      --font-sans:    'Barlow', sans-serif;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ─── 通用 ─── */
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 64px);
+    }
+
+    /* ─── 徽章 ─── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+      border: 1px solid var(--border);
+      background: var(--elevated);
+      color: var(--text-dim);
+    }
+    .badge.accent { background: var(--accent-bg); color: var(--accent); border-color: oklch(0.42 0.10 65); }
+
+    /* ─── 按钮 ─── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+      cursor: pointer; border: none; transition: all .15s ease;
+    }
+    .btn-primary {
+      background: var(--accent); color: oklch(0.12 0.02 65);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-ghost {
+      background: var(--elevated); color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); background: oklch(0.24 0.015 255); }
+
+    /* ═══════════════════════════════════════
+       导航栏
+    ═══════════════════════════════════════ */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: oklch(0.14 0.012 255 / 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+    }
+    .nav-logo-icon {
+      width: 30px; height: 30px;
+      background: var(--accent-bg);
+      border: 1px solid oklch(0.35 0.09 65);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-icon svg { color: var(--accent); }
+    .nav-logo-name {
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 16px;
+      color: var(--text); letter-spacing: -0.02em;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 28px;
+      list-style: none;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-dim);
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-actions { display: flex; gap: 8px; }
+
+    /* ═══════════════════════════════════════
+       Hero
+    ═══════════════════════════════════════ */
+    .hero {
+      padding: clamp(64px, 10vw, 120px) 0 clamp(48px, 8vw, 96px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 64px;
+    }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-mockup { display: none; }
+    }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 24px;
+    }
+    .hero-path {
+      font-size: 12px; font-weight: 500;
+      color: var(--text-muted);
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .hero-path span { color: var(--accent); }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 4.5vw, 58px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .hero-title em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-dim);
+      line-height: 1.75;
+      max-width: 46ch;
+      margin-bottom: 36px;
+    }
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ─── App 窗口模拟 ─── */
+    .app-window {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px oklch(0.20 0.015 255),
+        0 32px 80px oklch(0 0 0 / 0.6),
+        0 0 60px oklch(0.22 0.05 65 / 0.15);
+    }
+    /* 窗口标题栏 */
+    .win-titlebar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .win-dots { display: flex; gap: 6px; }
+    .win-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .win-dot.red   { background: oklch(0.55 0.18 22); }
+    .win-dot.amber { background: oklch(0.65 0.16 65); }
+    .win-dot.green { background: oklch(0.55 0.14 145); }
+    .win-title-text {
+      flex: 1; text-align: center;
+      font-size: 11px; color: var(--text-muted);
+    }
+    /* 应用内顶部导航 */
+    .app-nav {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px;
+      background: oklch(0.155 0.011 255 / 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+    .app-logo-chip {
+      width: 26px; height: 26px;
+      background: var(--accent-bg);
+      border: 1px solid oklch(0.35 0.09 65);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .app-logo-chip svg { color: var(--accent); }
+    .app-brand {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 700; color: var(--text);
+    }
+    .app-count {
+      font-size: 10px; color: var(--text-muted);
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 6px;
+    }
+    .app-search {
+      flex: 1;
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 10px;
+      font-size: 11px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .app-install-btn {
+      background: var(--accent);
+      color: oklch(0.12 0.02 65);
+      border: none; border-radius: var(--radius-sm);
+      padding: 5px 10px;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+    }
+    /* 分类筛选栏 */
+    .app-filters {
+      display: flex; gap: 5px; align-items: center;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border);
+      background: oklch(0.155 0.011 255 / 0.4);
+      overflow: hidden;
+    }
+    .filter-chip {
+      padding: 3px 9px;
+      border-radius: 7px;
+      font-size: 10px; font-weight: 600;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .filter-chip.active {
+      background: var(--accent-bg);
+      border-color: oklch(0.42 0.10 65);
+      color: var(--accent);
+    }
+    /* 卡片区 */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px 14px 14px;
+      background: var(--bg);
+    }
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute; left: 0; top: 14px; bottom: 14px;
+      width: 2px; border-radius: 2px;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .skill-card:hover { border-color: oklch(0.42 0.10 65); }
+    .skill-card:hover::before { opacity: 1; }
+    .sc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .cat-badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 9px; font-weight: 600;
+      border: 1px solid;
+    }
+    .cat-core     { color: var(--cat-core);     background: var(--cat-core-bg);     border-color: var(--cat-core-bd);     }
+    .cat-frontend { color: var(--cat-frontend); background: var(--cat-frontend-bg); border-color: var(--cat-frontend-bd); }
+    .cat-desktop  { color: var(--cat-desktop);  background: var(--cat-desktop-bg);  border-color: var(--cat-desktop-bd);  }
+    .cat-design   { color: var(--cat-design);   background: var(--cat-design-bg);   border-color: var(--cat-design-bd);   }
+    .cat-backend  { color: var(--cat-backend);  background: var(--cat-backend-bg);  border-color: var(--cat-backend-bd);  }
+    /* 实际 app 分类别名 */
+    .cat-ui    { color: var(--cat-design);   background: var(--cat-design-bg);   border-color: var(--cat-design-bd);   }
+    .cat-code  { color: var(--cat-frontend); background: var(--cat-frontend-bg); border-color: var(--cat-frontend-bd); }
+    .cat-docs  { color: var(--cat-core);     background: var(--cat-core-bg);     border-color: var(--cat-core-bd);     }
+    .cat-tools { color: var(--cat-backend);  background: var(--cat-backend-bg);  border-color: var(--cat-backend-bd);  }
+    .cat-ai    { color: var(--cat-desktop);  background: var(--cat-desktop-bg);  border-color: var(--cat-desktop-bd);  }
+    .sc-name {
+      font-family: var(--font-display);
+      font-size: 11px; font-weight: 700; color: var(--text);
+      margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sc-desc {
+      font-size: 9.5px; color: var(--text-dim); line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .sc-tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+    .sc-tag {
+      padding: 2px 5px;
+      background: oklch(0.19 0.01 255);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 8.5px; color: var(--text-dim);
+    }
+
+    /* ═══════════════════════════════════════
+       Stats Bar
+    ═══════════════════════════════════════ */
+    .stats-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .stats-inner {
+      display: flex; justify-content: center; align-items: stretch;
+      height: 88px;
+    }
+    .stat-item {
+      flex: 1; max-width: 200px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 28px; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+    }
+    .stat-label { font-size: 12px; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════
+       Features
+    ═══════════════════════════════════════ */
+    .features {
+      padding: clamp(64px, 9vw, 112px) 0;
+    }
+    .section-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 700; letter-spacing: -0.03em;
+      color: var(--text); margin-bottom: 56px;
+      line-height: 1.15;
+    }
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+    .feature-item {
+      background: var(--bg);
+      padding: 32px 28px;
+      transition: background .15s;
+    }
+    .feature-item:hover { background: var(--surface); }
+    .feat-num {
+      font-family: var(--font-display);
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    .feat-title {
+      font-family: var(--font-display);
+      font-size: 17px; font-weight: 700;
+      color: var(--text); margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .feat-desc {
+      font-size: 13.5px; color: var(--text-dim);
+      line-height: 1.7; max-width: 38ch;
+    }
+    .feat-desc code {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0px 5px;
+      font-size: 12px; color: var(--accent);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ═══════════════════════════════════════
+       Detail Preview (第二个 mockup)
+    ═══════════════════════════════════════ */
+    .preview-section {
+      padding: clamp(48px, 7vw, 96px) 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .preview-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 64px; align-items: center;
+    }
+    @media (max-width: 900px) {
+      .preview-inner { grid-template-columns: 1fr; }
+    }
+    .preview-detail {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: 0 24px 64px oklch(0 0 0 / 0.5);
+    }
+    .detail-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .detail-name {
+      font-family: var(--font-display);
+      font-size: 14px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .detail-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+    .detail-tabs {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .detail-tab {
+      padding: 9px 14px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+    }
+    .detail-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .detail-body { padding: 14px 16px; }
+    .md-h2 {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 700; color: var(--accent);
+      margin-bottom: 7px; margin-top: 12px;
+    }
+    .md-h2:first-child { margin-top: 0; }
+    .md-p {
+      font-size: 11.5px; color: var(--text-dim); line-height: 1.65;
+      margin-bottom: 8px;
+    }
+    .md-ul { padding-left: 16px; margin-bottom: 8px; }
+    .md-li { font-size: 11.5px; color: var(--text-dim); line-height: 1.65; margin-bottom: 2px; }
+    .md-code {
+      background: var(--elevated); border: 1px solid var(--border);
+      border-radius: 4px; padding: 2px 6px;
+      font-size: 10.5px; color: var(--accent);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ═══════════════════════════════════════
+       Download
+    ═══════════════════════════════════════ */
+    .download-section {
+      padding: clamp(64px, 9vw, 112px) 0;
+      text-align: center;
+    }
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 16px;
+      max-width: 640px;
+      margin: 40px auto 0;
+    }
+    .platform-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      display: flex; flex-direction: column;
+      align-items: stretch; gap: 12px;
+      transition: all .15s;
+    }
+    .platform-card:hover {
+      border-color: oklch(0.42 0.10 65);
+      background: var(--elevated);
+      transform: translateY(-2px);
+    }
+    .platform-icon {
+      width: 40px; height: 40px;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+    }
+    .platform-name {
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 700; color: var(--text);
+    }
+    .platform-sub {
+      font-size: 12px; color: var(--text-muted); line-height: 1.8;
+    }
+    .platform-sub span { display: block; }
+    .platform-dl {
+      margin-top: auto;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 14px;
+      background: var(--accent-bg);
+      border: 1px solid oklch(0.35 0.09 65);
+      border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 700; color: var(--accent);
+      transition: all .15s;
+    }
+    .platform-card:hover .platform-dl {
+      background: var(--accent);
+      color: oklch(0.12 0.02 65);
+      border-color: var(--accent);
+    }
+
+    /* ═══════════════════════════════════════
+       Footer
+    ═══════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      background: var(--surface);
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px; flex-wrap: wrap;
+    }
+    .footer-brand {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .footer-logo {
+      width: 22px; height: 22px;
+      background: var(--accent-bg);
+      border: 1px solid oklch(0.35 0.09 65);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+    }
+    .footer-name {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 700; color: var(--text);
+    }
+    .footer-copy { font-size: 12px; color: var(--text-muted); }
+    .footer-links { display: flex; gap: 20px; font-size: 13px; color: var(--text-muted); }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── 动画 ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0);  }
+    }
+    .hero-text > * {
+      animation: fadeUp .5s ease both;
+    }
+    .hero-text > *:nth-child(1) { animation-delay: .05s; }
+    .hero-text > *:nth-child(2) { animation-delay: .12s; }
+    .hero-text > *:nth-child(3) { animation-delay: .20s; }
+    .hero-text > *:nth-child(4) { animation-delay: .28s; }
+    .hero-mockup {
+      animation: fadeUp .6s ease .15s both;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════ 导航栏 ════════════ -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <span class="nav-logo-name">Skills Hub</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features">特性</a></li>
+        <li><a href="#preview">预览</a></li>
+        <li><a href="#download">下载</a></li>
+        <li><a href="https://github.com/iptodays/skills-hub" style="color: var(--text-muted);">GitHub</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="#download" class="btn btn-primary" style="padding: 8px 18px; font-size: 13px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载应用
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════ Hero ════════════ -->
+<section>
+  <div class="container">
+    <div class="hero">
+      <!-- 文字区 -->
+      <div class="hero-text">
+        <div class="hero-eyebrow">
+          <span class="hero-path"><span>~/.agents/</span>skills</span>
+          <span class="badge accent" id="version-badge">Tauri v2</span>
+        </div>
+        <h1 class="hero-title">
+          你的 Agent<br>
+          <em>技能管理中心</em>
+        </h1>
+        <p class="hero-desc">
+          读取 <code style="font-size:13px;background:var(--elevated);border:1px solid var(--border);border-radius:4px;padding:1px 6px;color:var(--accent);font-family:'SF Mono',monospace;">~/.agents/skills</code> 下已安装的所有 Agent 技能，支持搜索、分类筛选、Markdown 查阅与 AI 深度分析，结果缓存本地，完全离线运行。
+        </p>
+        <div class="hero-cta">
+          <a href="#download" class="btn btn-primary">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载 Skills Hub
+          </a>
+          <a href="https://github.com/iptodays/skills-hub" class="btn btn-ghost">在 GitHub 查看</a>
+        </div>
+      </div>
+
+      <!-- App 窗口 mockup -->
+      <div class="hero-mockup">
+        <div class="app-window">
+          <!-- 窗口标题栏 -->
+          <div class="win-titlebar">
+            <div class="win-dots">
+              <div class="win-dot red"></div>
+              <div class="win-dot amber"></div>
+              <div class="win-dot green"></div>
+            </div>
+            <div class="win-title-text">Skills Hub</div>
+          </div>
+          <!-- 应用内导航 -->
+          <div class="app-nav">
+            <div class="app-logo-chip">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <span class="app-brand">Skills Hub</span>
+            <span class="app-count">22</span>
+            <div class="app-search" style="flex:1;">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <span style="font-size:10px;">搜索名称、描述、标签…</span>
+            </div>
+            <div class="app-install-btn">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              安装技能
+            </div>
+          </div>
+          <!-- 分类筛选 -->
+          <div class="app-filters">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-muted);flex-shrink:0;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span class="filter-chip active">全部 <span style="margin-left:3px;padding:1px 4px;background:oklch(0.35 0.09 65);color:var(--accent);border-radius:4px;font-size:9px;">22</span></span>
+            <span class="filter-chip">UI 设计</span>
+            <span class="filter-chip">编码开发</span>
+            <span class="filter-chip">文档写作</span>
+            <span class="filter-chip">AI 智能体</span>
+          </div>
+          <!-- 卡片网格 -->
+          <div class="app-grid">
+            <!-- 卡片 1 -->
+            <div class="skill-card">
+              <div class="sc-header">
+                <span class="cat-badge cat-ui">UI 设计</span>
+              </div>
+              <div class="sc-name">impeccable</div>
+              <div class="sc-desc">创建独特、产品级前端界面，生成有创意的高质量代码，避免 AI 生成痕迹。</div>
+              <div class="sc-tags">
+                <span class="sc-tag">前端</span>
+                <span class="sc-tag">UI</span>
+              </div>
+            </div>
+            <!-- 卡片 2 -->
+            <div class="skill-card">
+              <div class="sc-header">
+                <span class="cat-badge cat-ui">UI 设计</span>
+              </div>
+              <div class="sc-name">animate</div>
+              <div class="sc-desc">为功能添加有目的感的动画、微交互和运动效果，提升可用性。</div>
+              <div class="sc-tags">
+                <span class="sc-tag">动画</span>
+                <span class="sc-tag">CSS</span>
+              </div>
+            </div>
+            <!-- 卡片 3 -->
+            <div class="skill-card">
+              <div class="sc-header">
+                <span class="cat-badge cat-code">编码开发</span>
+              </div>
+              <div class="sc-name">frontend-standards</div>
+              <div class="sc-desc">Vue 3 + Vite + TypeScript 项目开发规范，含组件设计、状态管理和生命周期规则。</div>
+              <div class="sc-tags">
+                <span class="sc-tag">Vue 3</span>
+                <span class="sc-tag">TypeScript</span>
+              </div>
+            </div>
+            <!-- 卡片 4 -->
+            <div class="skill-card">
+              <div class="sc-header">
+                <span class="cat-badge cat-code">编码开发</span>
+              </div>
+              <div class="sc-name">backend-standards</div>
+              <div class="sc-desc">Express、Fastify 等 Node.js 框架 API 服务开发指南，含 ORM 模式。</div>
+              <div class="sc-tags">
+                <span class="sc-tag">Node.js</span>
+                <span class="sc-tag">API</span>
+              </div>
+            </div>
+            <!-- 卡片 5 -->
+            <div class="skill-card">
+              <div class="sc-header">
+                <span class="cat-badge cat-docs">文档写作</span>
+              </div>
+              <div class="sc-name">architecture-diagram</div>
+              <div class="sc-desc">生成专业深色系架构图，含系统组件与关系的 SVG 可视化，导出为独立 HTML。</div>
+              <div class="sc-tags">
+                <span class="sc-tag">架构</span>
+                <span class="sc-tag">图表</span>
+              </div>
+            </div>
+            <!-- 卡片 6 -->
+            <div class="skill-card">
+              <div class="sc-header">
+                <span class="cat-badge cat-ai">AI 智能体</span>
+              </div>
+              <div class="sc-name">find-skills</div>
+              <div class="sc-desc">帮助用户发现并安装 Agent 技能，当用户询问「如何做 X」或「有没有 X 相关技能」时触发。</div>
+              <div class="sc-tags">
+                <span class="sc-tag">技能</span>
+                <span class="sc-tag">Agent</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ Stats Bar ════════════ -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num" style="font-size:18px;letter-spacing:-0.01em;">~/.agents</div>
+        <div class="stat-label">技能从本地目录读取</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">自动分类维度</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">支持平台</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">云端依赖</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ Features ════════════ -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-label">核心功能</div>
+    <h2 class="section-title">一切，都在本地运行</h2>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feat-num">01</div>
+        <div class="feat-title">浏览与搜索</div>
+        <div class="feat-desc">卡片列表展示所有安装在 <code>~/.agents/skills</code> 下的技能，支持按分类筛选、关键词实时搜索名称 / 描述 / 标签。</div>
+      </div>
+      <div class="feature-item">
+        <div class="feat-num">02</div>
+        <div class="feat-title">Markdown 文档渲染</div>
+        <div class="feat-desc">内置渲染器，直接阅读每个技能的 <code>SKILL.md</code>，无需离开应用，代码块高亮、表格、blockquote 全部支持。</div>
+      </div>
+      <div class="feature-item">
+        <div class="feat-num">03</div>
+        <div class="feat-title">AI 深度分析</div>
+        <div class="feat-desc">调用 Claude API（可自定义 Base URL 与模型）对技能进行深度分析。结果永久缓存在本地 SQLite，内容不变则不消耗 API 额度。</div>
+      </div>
+      <div class="feature-item">
+        <div class="feat-num">04</div>
+        <div class="feat-title">Git 克隆安装</div>
+        <div class="feat-desc">从 GitHub / GitLab / Gitee 一键克隆安装，支持带路径的子目录安装。安装前展示影响说明，需二次确认。</div>
+      </div>
+      <div class="feature-item">
+        <div class="feat-num">05</div>
+        <div class="feat-title">安全删除</div>
+        <div class="feat-desc">删除前展示详细影响列表（目录永久删除、Agent 立即不可用、引用 prompt 可能失效），需二次确认方可执行。</div>
+      </div>
+      <div class="feature-item">
+        <div class="feat-num">06</div>
+        <div class="feat-title">系统托盘驻留</div>
+        <div class="feat-desc">关闭窗口后驻留系统托盘，单击托盘图标唤起主窗口，随时可用，不占用 Dock 空间。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ Detail Preview ════════════ -->
+<section class="preview-section" id="preview">
+  <div class="container">
+    <div class="preview-inner">
+      <div>
+        <div class="section-label">AI 分析 · SQLite 缓存</div>
+        <h2 class="section-title" style="margin-bottom: 20px;">读懂每一个技能</h2>
+        <p style="font-size:15px;color:var(--text-dim);line-height:1.8;max-width:40ch;margin-bottom:28px;">
+          配置你自己的 Claude API 密钥，Skills Hub 会自动分析技能的用途、适用场景和安全性，并将结果缓存在本地 SQLite 中。下次打开无需联网，即刻读取。
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;"></div>
+            <span style="font-size:13px;color:var(--text-dim);">可配置 Base URL，兼容代理接口</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;"></div>
+            <span style="font-size:13px;color:var(--text-dim);">默认模型 <code style="font-size:11px;background:var(--elevated);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--accent);font-family:'SF Mono',monospace;">claude-3-haiku-20240307</code></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;"></div>
+            <span style="font-size:13px;color:var(--text-dim);">配置保存在本地 <code style="font-size:11px;background:var(--elevated);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--accent);font-family:'SF Mono',monospace;">ai_config.json</code></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail panel mockup -->
+      <div class="preview-detail">
+        <div class="detail-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div class="detail-name">impeccable</div>
+            <span class="cat-badge cat-core" style="font-size:10px;">Core</span>
+          </div>
+          <div class="detail-meta">
+            <span class="badge" style="font-size:10px;">前端</span>
+            <span class="badge" style="font-size:10px;">UI</span>
+            <span class="badge" style="font-size:10px;">设计</span>
+            <span class="badge" style="font-size:10px;">代码生成</span>
+          </div>
+        </div>
+        <div class="detail-tabs">
+          <div class="detail-tab">文档</div>
+          <div class="detail-tab active">AI 分析</div>
+        </div>
+        <div class="detail-body">
+          <div class="md-h2">技能概述</div>
+          <div class="md-p">
+            用于创建独特、产品级的前端界面。引导生成有创意的、打磨精良的代码，避免通用 AI 美学风格。
+          </div>
+          <div class="md-h2">适用场景</div>
+          <ul class="md-ul">
+            <li class="md-li">构建完整的 Web 组件、页面或应用</li>
+            <li class="md-li">需要高设计质量输出时调用</li>
+            <li class="md-li">与其他设计技能配合使用</li>
+          </ul>
+          <div class="md-h2">安全评估</div>
+          <div class="md-p" style="color:var(--success);font-size:11px;">
+            ✓ 无高危操作，不访问文件系统，不发送网络请求。安全等级：<strong>低风险</strong>
+          </div>
+          <div style="margin-top:12px;padding:8px;background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:10px;color:var(--text-muted);">分析来自缓存 · ai_cache.db</span>
+            <span style="font-size:10px;color:var(--text-muted);">2026-04-18</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ Download ════════════ -->
+<section class="download-section" id="download">
+  <div class="container">
+    <div class="section-label" style="text-align:center;">立即下载</div>
+    <h2 class="section-title" style="text-align:center;margin-bottom:12px;">适配你的平台</h2>
+    <p style="color:var(--text-muted);font-size:14px;">免费开源，基于 Tauri v2 构建，原生性能，极小体积。</p>
+    <div class="platform-grid">
+      <!-- macOS -->
+      <div class="platform-card">
+        <div class="platform-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        </div>
+        <div class="platform-name">macOS</div>
+        <div class="platform-sub"><span>Universal Binary · Apple Silicon / Intel</span><span>macOS 10.15+</span></div>
+        <a href="https://github.com/iptodays/skills-hub/releases/latest" id="dl-macos" class="platform-dl">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载 .dmg
+        </a>
+      </div>
+      <!-- Windows -->
+      <div class="platform-card">
+        <div class="platform-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        </div>
+        <div class="platform-name">Windows</div>
+        <div class="platform-sub"><span>NSIS Installer · x86_64</span><span>Windows 10+</span></div>
+        <a href="https://github.com/iptodays/skills-hub/releases/latest" id="dl-windows" class="platform-dl">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载 .exe
+        </a>
+      </div>
+    </div>
+    <p style="margin-top:24px;font-size:12px;color:var(--text-muted);">
+      或从
+      <a href="https://github.com/iptodays/skills-hub/releases" style="color:var(--accent);">GitHub Releases</a>
+      获取历史版本 · MIT License
+    </p>
+  </div>
+</section>
+
+<!-- ════════════ Footer ════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="footer-name">Skills Hub</span>
+        </div>
+        <div class="footer-copy" style="margin-top:6px;padding-left:30px;">© 2026 Skills Hub · MIT License</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/iptodays/skills-hub">GitHub</a>
+        <a href="https://github.com/iptodays/skills-hub/releases">Releases</a>
+        <a href="https://github.com/iptodays/skills-hub/issues">Issues</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* 从 GitHub Releases API 动态获取最新版本号 */
+  (function () {
+    fetch('https://api.github.com/repos/iptodays/skills-hub/releases/latest')
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function (d) {
+        if (!d.tag_name) return;
+        /* 更新版本徽章 */
+        var badge = document.getElementById('version-badge');
+        if (badge) badge.textContent = d.tag_name + ' — Tauri v2';
+        /* 更新下载链接为具体资产 */
+        var assets = d.assets || [];
+        assets.forEach(function (a) {
+          var name = a.name.toLowerCase();
+          if (name.endsWith('.dmg')) {
+            var el = document.getElementById('dl-macos');
+            if (el) el.href = a.browser_download_url;
+          } else if (name.endsWith('.exe') || name.endsWith('.msi')) {
+            var el = document.getElementById('dl-windows');
+            if (el) el.href = a.browser_download_url;
+          }
+        });
+      })
+      .catch(function () { /* 暂无 Release，静默忽略 */ });
+  })();
+</script>
+</body>
+</html>

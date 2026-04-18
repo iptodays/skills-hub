@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=false
+name: Deploy Website to Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "website/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传 website 目录
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
