@@ -21,7 +21,7 @@ jobs:
 
       - name: 缓存 node_modules
         id: nm-cache-mac
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: node_modules
           key: node-modules-macos-${{ hashFiles('package-lock.json') }}
@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: 缓存 Rust 工具链
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.rustup/toolchains
@@ -81,7 +81,7 @@ jobs:
 
       - name: 缓存 node_modules
         id: nm-cache-win
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: node_modules
           key: node-modules-windows-${{ hashFiles('package-lock.json') }}
@@ -91,7 +91,7 @@ jobs:
         run: npm ci
 
       - name: 缓存 Rust 工具链
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.rustup/toolchains
