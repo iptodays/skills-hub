@@ -11,13 +11,13 @@ const emit = defineEmits<{
 /** 根据分类返回对应的样式类 */
 function categoryStyle(category: string): string {
   const map: Record<string, string> = {
-    'Core': 'bg-[oklch(0.22_0.06_230)] text-[oklch(0.70_0.14_230)] border-[oklch(0.30_0.08_230)]',
-    'Frontend': 'bg-[oklch(0.20_0.06_165)] text-[oklch(0.73_0.14_165)] border-[oklch(0.28_0.08_165)]',
-    'Desktop': 'bg-[oklch(0.22_0.06_310)] text-[oklch(0.70_0.14_310)] border-[oklch(0.30_0.08_310)]',
-    'Design': 'bg-[oklch(0.22_0.06_65)]  text-[oklch(0.77_0.16_65)]  border-[oklch(0.30_0.08_65)]',
-    'Backend': 'bg-[oklch(0.20_0.06_200)] text-[oklch(0.70_0.14_200)] border-[oklch(0.28_0.08_200)]',
+    'Core': 'bg-cat-core/10 text-cat-core border-cat-core/20',
+    'Frontend': 'bg-cat-frontend/10 text-cat-frontend border-cat-frontend/20',
+    'Desktop': 'bg-cat-desktop/10 text-cat-desktop border-cat-desktop/20',
+    'Design': 'bg-cat-design/10  text-cat-design  border-cat-design/20',
+    'Backend': 'bg-cat-backend/10 text-cat-backend border-cat-backend/20',
   }
-  return map[category] ?? 'bg-[oklch(0.20_0.01_255)] text-[oklch(0.55_0.02_255)] border-[oklch(0.28_0.02_255)]'
+  return map[category] ?? 'bg-cat-default/10 text-cat-default border-cat-default/20'
 }
 
 const MAX_TAGS = 3
@@ -26,9 +26,9 @@ const MAX_TAGS = 3
 <template>
   <article class="group relative flex flex-col bg-surface border border-border rounded-xl p-5 cursor-pointer
            transition-all duration-200
-           hover:border-[oklch(0.42_0.10_65)]
+           hover:border-accent/40
            hover:bg-elevated
-           hover:shadow-[0_0_0_1px_oklch(0.35_0.09_65),0_6px_28px_oklch(0_0_0/0.25)]" @click="emit('view', skill)">
+           hover:shadow-[0_0_0_1px_var(--color-accent),0_6px_28px_oklch(0_0_0/0.15)] dark:hover:shadow-[0_0_0_1px_var(--color-accent),0_6px_28px_oklch(0_0_0/0.4)]" @click="emit('view', skill)">
     <!-- 左侧悬浮指示条 -->
     <div class="absolute left-0 top-4 bottom-4 w-0.75 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="background: var(--color-accent);" />
     <!-- 顶部行：分类 + 操作按钮 -->
@@ -64,19 +64,19 @@ const MAX_TAGS = 3
       <!-- 应用于标签（最多显示 MAX_TAGS 个）-->
       <template v-for="(tag) in skill.appliesTo.slice(0, MAX_TAGS)" :key="tag">
         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs
-                 bg-[oklch(0.19_0.01_255)] text-text-dim border border-border">
+                 bg-input text-text-dim border border-border">
           <Tag :size="10" class="opacity-60" />
           {{ tag }}
         </span>
       </template>
 
       <!-- 剩余标签数量 -->
-      <span v-if="skill.appliesTo.length > MAX_TAGS" class="px-2 py-0.5 rounded-md text-xs bg-[oklch(0.19_0.01_255)] text-text-muted border border-border">
+      <span v-if="skill.appliesTo.length > MAX_TAGS" class="px-2 py-0.5 rounded-md text-xs bg-input text-text-muted border border-border">
         +{{ skill.appliesTo.length - MAX_TAGS }}
       </span>
 
       <!-- 无 SKILL.md 警告 -->
-      <span v-if="!skill.hasSkillFile" class="ml-auto px-2 py-0.5 rounded-md text-xs bg-warning-bg text-warning border border-[oklch(0.35_0.08_75)]">
+      <span v-if="!skill.hasSkillFile" class="ml-auto px-2 py-0.5 rounded-md text-xs bg-warning-bg text-warning border border-warning/30">
         无 SKILL.md
       </span>
 

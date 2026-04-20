@@ -1,33 +1,65 @@
 @import "tailwindcss";
 
-/* ===== 主题色彩与排版定义 ===== */
-@theme {
+/* ===== 主题变量定义 ===== */
+:root {
   /* 字体 */
   --font-display: "Lexend Deca", sans-serif;
   --font-sans: "Barlow", sans-serif;
 
-  /* 深色背景层级 */
+  /* 基础颜色 - 浅色模式 (默认) */
+  --color-bg: oklch(0.98 0.005 255);
+  --color-surface: oklch(1.0 0 0);
+  --color-elevated: oklch(0.95 0.01 255);
+  --color-input: oklch(0.97 0.005 255);
+
+  --color-border: oklch(0.92 0.01 255);
+  --color-border-strong: oklch(0.85 0.02 255);
+
+  --color-text: oklch(0.25 0.01 255);
+  --color-text-dim: oklch(0.45 0.01 255);
+  --color-text-muted: oklch(0.60 0.01 255);
+
+  --color-accent: oklch(0.65 0.16 65);
+  --color-accent-content: oklch(0.98 0.01 65);
+  --color-accent-hover: oklch(0.72 0.17 65);
+  --color-accent-bg: oklch(0.94 0.04 65);
+  --color-accent-dim: oklch(0.90 0.06 65);
+
+  --color-danger: oklch(0.55 0.20 25);
+  --color-danger-bg: oklch(0.95 0.04 25);
+  --color-success: oklch(0.50 0.18 145);
+  --color-success-bg: oklch(0.94 0.04 145);
+  --color-warning: oklch(0.60 0.18 75);
+  --color-warning-bg: oklch(0.95 0.04 75);
+
+  --color-cat-core: oklch(0.60 0.18 230);
+  --color-cat-frontend: oklch(0.65 0.18 165);
+  --color-cat-desktop: oklch(0.60 0.18 310);
+  --color-cat-design: oklch(0.65 0.16 65);
+  --color-cat-backend: oklch(0.60 0.18 200);
+  --color-cat-default: oklch(0.50 0.01 255);
+}
+
+/* 深色模式变量覆盖 */
+html.dark {
   --color-bg: oklch(0.12 0.013 255);
   --color-surface: oklch(0.17 0.011 255);
   --color-elevated: oklch(0.21 0.013 255);
   --color-input: oklch(0.15 0.01 255);
 
-  /* 边框 */
   --color-border: oklch(0.26 0.018 255);
   --color-border-strong: oklch(0.36 0.02 255);
 
-  /* 文字层级 */
   --color-text: oklch(0.92 0.009 85);
   --color-text-dim: oklch(0.60 0.013 255);
   --color-text-muted: oklch(0.42 0.01 255);
 
-  /* 琥珀色主题色 */
   --color-accent: oklch(0.77 0.16 65);
+  --color-accent-content: oklch(0.12 0.02 65);
   --color-accent-hover: oklch(0.83 0.17 65);
   --color-accent-bg: oklch(0.28 0.08 65);
   --color-accent-dim: oklch(0.22 0.05 65);
 
-  /* 语义色 */
   --color-danger: oklch(0.63 0.18 22);
   --color-danger-bg: oklch(0.22 0.07 22);
   --color-success: oklch(0.71 0.16 145);
@@ -35,13 +67,51 @@
   --color-warning: oklch(0.78 0.17 75);
   --color-warning-bg: oklch(0.25 0.07 75);
 
-  /* 分类徽章颜色 */
   --color-cat-core: oklch(0.70 0.14 230);
   --color-cat-frontend: oklch(0.73 0.14 165);
   --color-cat-desktop: oklch(0.70 0.14 310);
   --color-cat-design: oklch(0.77 0.16 65);
   --color-cat-backend: oklch(0.70 0.14 200);
   --color-cat-default: oklch(0.55 0.02 255);
+}
+
+/* Tailwind 映射 */
+@theme {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-elevated: var(--color-elevated);
+  --color-input: var(--color-input);
+
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-text: var(--color-text);
+  --color-text-dim: var(--color-text-dim);
+  --color-text-muted: var(--color-text-muted);
+
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-bg: var(--color-accent-bg);
+  --color-accent-dim: var(--color-accent-dim);
+
+  --color-danger: var(--color-danger);
+  --color-danger-bg: var(--color-danger-bg);
+  --color-success: var(--color-success);
+  --color-success-bg: var(--color-success-bg);
+  --color-warning: var(--color-warning);
+  --color-warning-bg: var(--color-warning-bg);
+
+  --color-cat-core: var(--color-cat-core);
+  --color-cat-frontend: var(--color-cat-frontend);
+  --color-cat-desktop: var(--color-cat-desktop);
+  --color-cat-design: var(--color-cat-design);
+  --color-cat-backend: var(--color-cat-backend);
+  --color-cat-default: var(--color-cat-default);
+
+  --color-accent-content: var(--color-accent-content);
 }
 
 /* ===== 基础重置 ===== */

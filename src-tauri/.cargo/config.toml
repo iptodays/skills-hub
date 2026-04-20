@@ -1,7 +1,7 @@
-# Dependabot 的内部代理不支持 crates.io 稀疏索引协议（index.crates.io），
-# 强制回退到经典 git 索引以避免 "Weird server reply" 错误
-[source.crates-io]
-replace-with = "git-crates-io"
-
-[source.git-crates-io]
-registry = "https://github.com/rust-lang/crates.io-index"
+# # Dependabot 的内部代理不支持 crates.io 稀疏索引协议（index.crates.io），
+# # 强制回退到经典 git 索引以避免 "Weird server reply" 错误
+# [source.crates-io]
+# replace-with = "git-crates-io"
+#
+# [source.git-crates-io]
+# registry = "https://github.com/rust-lang/crates.io-index"

@@ -85,13 +85,13 @@ const htmlContent = computed(() => {
 /** 分类徽章样式 */
 function categoryStyle(category: string): string {
   const map: Record<string, string> = {
-    'Core': 'bg-[oklch(0.22_0.06_230)] text-[oklch(0.70_0.14_230)] border-[oklch(0.30_0.08_230)]',
-    'Frontend': 'bg-[oklch(0.20_0.06_165)] text-[oklch(0.73_0.14_165)] border-[oklch(0.28_0.08_165)]',
-    'Desktop': 'bg-[oklch(0.22_0.06_310)] text-[oklch(0.70_0.14_310)] border-[oklch(0.30_0.08_310)]',
-    'Design': 'bg-[oklch(0.22_0.06_65)]  text-[oklch(0.77_0.16_65)]  border-[oklch(0.30_0.08_65)]',
-    'Backend': 'bg-[oklch(0.20_0.06_200)] text-[oklch(0.70_0.14_200)] border-[oklch(0.28_0.08_200)]',
+    'Core': 'bg-cat-core/10 text-cat-core border-cat-core/20',
+    'Frontend': 'bg-cat-frontend/10 text-cat-frontend border-cat-frontend/20',
+    'Desktop': 'bg-cat-desktop/10 text-cat-desktop border-cat-desktop/20',
+    'Design': 'bg-cat-design/10  text-cat-design  border-cat-design/20',
+    'Backend': 'bg-cat-backend/10 text-cat-backend border-cat-backend/20',
   }
-  return map[category] ?? 'bg-[oklch(0.20_0.01_255)] text-[oklch(0.55_0.02_255)] border-[oklch(0.28_0.02_255)]'
+  return map[category] ?? 'bg-cat-default/10 text-cat-default border-cat-default/20'
 }
 
 /** 切换技能时加载内容，并尝试从本地缓存恢复 AI 分析结果 */
@@ -129,10 +129,9 @@ async function confirmDelete() {
 
 <template>
   <!-- 遮罩 -->
-  <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-end" style="background: oklch(0 0 0 / 0.5); backdrop-filter: blur(3px);" @click.self="emit('close')">
+  <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-end bg-black/50 backdrop-blur-sm" @click.self="emit('close')">
     <!-- 面板：从右侧滑入 -->
-    <div class="w-full sm:w-140 h-full bg-surface border-l border-border flex flex-col
-             shadow-[−25px_0_50px_oklch(0_0_0/0.4)]">
+    <div class="w-full sm:w-140 h-full bg-surface border-l border-border flex flex-col shadow-2xl">
       <!-- 头部 -->
       <div class="flex items-start gap-4 px-6 py-5 border-b border-border shrink-0">
         <div class="flex-1 min-w-0">
@@ -171,7 +170,7 @@ async function confirmDelete() {
         <template v-if="skill.dependsOn.length > 0">
           <div class="w-px h-4 bg-border self-center" />
           <span v-for="dep in skill.dependsOn" :key="dep" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs
-                   bg-[oklch(0.19_0.01_255)] text-text-muted border border-border">
+                   bg-input text-text-muted border border-border">
             <Link :size="10" class="opacity-60" />
             {{ dep }}
           </span>
@@ -181,12 +180,12 @@ async function confirmDelete() {
       <!-- 标签页切换 -->
       <div class="flex border-b border-border shrink-0 px-6">
         <button v-for="tab in [{ id: 'doc', label: '文档' }, { id: 'ai', label: 'AI 分析' }]" :key="tab.id" class="flex items-center gap-1.5 px-1 py-3 mr-6 text-sm font-medium border-b-2 -mb-px transition-colors" :class="activeTab === tab.id
-          ? 'border-[oklch(0.77_0.16_65)] text-[oklch(0.77_0.16_65)]'
+          ? 'border-accent text-accent'
           : 'border-transparent text-text-muted hover:text-text'" @click="activeTab = (tab.id as 'doc' | 'ai')">
           <Sparkles v-if="tab.id === 'ai'" :size="13" />
           {{ tab.label }}
           <!-- AI 分析已完成的小圆点指示 -->
-          <span v-if="tab.id === 'ai' && aiResult && !aiLoading" class="w-1.5 h-1.5 rounded-full bg-[oklch(0.77_0.16_65)]" />
+          <span v-if="tab.id === 'ai' && aiResult && !aiLoading" class="w-1.5 h-1.5 rounded-full bg-accent" />
         </button>
       </div>
 
@@ -199,7 +198,7 @@ async function confirmDelete() {
         </div>
 
         <!-- 错误 -->
-        <div v-else-if="mdError" class="flex items-start gap-2 p-4 rounded-lg bg-danger-bg border border-[oklch(0.35_0.08_22)] text-danger text-sm">
+        <div v-else-if="mdError" class="flex items-start gap-2 p-4 rounded-lg bg-danger-bg border border-danger/20 text-danger text-sm">
           <AlertCircle :size="16" class="shrink-0 mt-0.5" />
           {{ mdError }}
         </div>
@@ -218,26 +217,25 @@ async function confirmDelete() {
               <Settings :size="13" />
               <span>Claude API 配置</span>
               <span class="text-[11px] px-1.5 py-0.5 rounded-md" :class="aiStore.hasApiKey
-                ? 'bg-[oklch(0.18_0.05_140)] text-[oklch(0.65_0.15_140)]'
-                : 'bg-[oklch(0.20_0.06_65)] text-[oklch(0.70_0.14_65)]'">{{ aiStore.hasApiKey ? '已配置' : '未配置' }}</span>
+                ? 'bg-success-bg text-success'
+                : 'bg-accent/10 text-accent'">{{ aiStore.hasApiKey ? '已配置' : '未配置' }}</span>
             </div>
             <ChevronDown :size="13" class="text-text-muted transition-transform" :class="showAiSettings ? 'rotate-180' : ''" />
           </button>
           <div v-if="showAiSettings" class="px-4 pb-4 flex flex-col gap-3 border-t border-border bg-elevated/30">
             <label class="flex flex-col gap-1.5 mt-3">
               <span class="text-xs text-text-muted">API Key</span>
-              <input v-model="settingsDraft.apiKey" type="password" placeholder="sk-ant-..." class="text-sm bg-surface border border-border rounded-lg px-3 py-2 text-text placeholder:text-text-muted/50 outline-none focus:border-[oklch(0.77_0.16_65)] transition-colors" />
+              <input v-model="settingsDraft.apiKey" type="password" placeholder="sk-ant-..." class="text-sm bg-surface border border-border rounded-lg px-3 py-2 text-text placeholder:text-text-muted/50 outline-none focus:border-accent transition-colors" />
             </label>
             <label class="flex flex-col gap-1.5">
               <span class="text-xs text-text-muted">Base URL <span class="opacity-50">（留空使用官方接口）</span></span>
-              <input v-model="settingsDraft.baseUrl" type="text" placeholder="https://api.anthropic.com"
-                class="text-sm bg-surface border border-border rounded-lg px-3 py-2 text-text placeholder:text-text-muted/50 outline-none focus:border-[oklch(0.77_0.16_65)] transition-colors" />
+              <input v-model="settingsDraft.baseUrl" type="text" placeholder="https://api.anthropic.com" class="text-sm bg-surface border border-border rounded-lg px-3 py-2 text-text placeholder:text-text-muted/50 outline-none focus:border-accent transition-colors" />
             </label>
             <label class="flex flex-col gap-1.5">
               <span class="text-xs text-text-muted">模型</span>
-              <input v-model="settingsDraft.model" type="text" placeholder="claude-3-haiku-20240307" class="text-sm bg-surface border border-border rounded-lg px-3 py-2 text-text placeholder:text-text-muted/50 outline-none focus:border-[oklch(0.77_0.16_65)] transition-colors" />
+              <input v-model="settingsDraft.model" type="text" placeholder="claude-3-haiku-20240307" class="text-sm bg-surface border border-border rounded-lg px-3 py-2 text-text placeholder:text-text-muted/50 outline-none focus:border-accent transition-colors" />
             </label>
-            <button class="self-end px-4 py-1.5 rounded-lg text-xs font-medium bg-[oklch(0.77_0.16_65)] text-black hover:opacity-90 transition-opacity" @click="saveSettings">
+            <button class="self-end px-4 py-1.5 rounded-lg text-xs font-medium bg-accent text-accent-text hover:opacity-90 transition-opacity" @click="saveSettings">
               保存
             </button>
           </div>
@@ -245,28 +243,28 @@ async function confirmDelete() {
 
         <!-- 未分析入口 -->
         <div v-if="!aiResult && !aiLoading && !aiError" class="flex-1 flex flex-col items-center justify-center gap-3 py-10">
-          <div class="w-12 h-12 rounded-2xl bg-[oklch(0.18_0.04_65)] flex items-center justify-center">
-            <Sparkles :size="22" class="text-[oklch(0.77_0.16_65)] opacity-80" />
+          <div class="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center">
+            <Sparkles :size="22" class="text-accent opacity-80" />
           </div>
           <p class="text-sm text-text-muted text-center max-w-50 leading-relaxed">
             AI 深度分析技能用途、场景与使用示例
           </p>
-          <button :disabled="!aiStore.hasApiKey || mdLoading" class="mt-1 px-6 py-2 rounded-xl text-sm font-medium bg-[oklch(0.77_0.16_65)] text-black hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed" @click="runAnalysis">
+          <button :disabled="!aiStore.hasApiKey || mdLoading" class="mt-1 px-6 py-2 rounded-xl text-sm font-medium bg-accent text-accent-text hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed" @click="runAnalysis">
             开始分析
           </button>
-          <p v-if="!aiStore.hasApiKey" class="text-xs text-[oklch(0.60_0.10_65)]">
+          <p v-if="!aiStore.hasApiKey" class="text-xs text-accent/60">
             请先展开上方配置 API Key
           </p>
         </div>
 
         <!-- 分析中 -->
         <div v-if="aiLoading" class="flex-1 flex flex-col items-center justify-center gap-3 py-10 text-text-muted">
-          <Loader2 :size="24" class="animate-spin text-[oklch(0.77_0.16_65)]" />
+          <Loader2 :size="24" class="animate-spin text-accent" />
           <p class="text-sm">分析中，请稍候…</p>
         </div>
 
         <!-- 错误 -->
-        <div v-if="aiError && !aiLoading" class="flex items-start gap-2 p-4 rounded-xl bg-danger-bg border border-[oklch(0.35_0.08_22)] text-danger text-sm">
+        <div v-if="aiError && !aiLoading" class="flex items-start gap-2 p-4 rounded-xl bg-danger-bg border border-danger/20 text-danger text-sm">
           <AlertCircle :size="15" class="shrink-0 mt-0.5" />
           <span class="flex-1">{{ aiError }}</span>
           <button class="text-xs underline opacity-70 hover:opacity-100 shrink-0" @click="runAnalysis">重试</button>
@@ -275,8 +273,8 @@ async function confirmDelete() {
         <!-- 分析结果 -->
         <template v-if="aiResult && !aiLoading">
           <!-- 摘要 -->
-          <div class="rounded-xl bg-[oklch(0.17_0.04_65)] border border-accent-bg px-4 py-3.5">
-            <p class="text-[11px] font-semibold tracking-widest text-[oklch(0.60_0.12_65)] mb-1.5">SUMMARY</p>
+          <div class="rounded-xl bg-accent/5 border border-accent/10 px-4 py-3.5">
+            <p class="text-[11px] font-semibold tracking-widest text-accent/60 mb-1.5">SUMMARY</p>
             <p class="text-sm text-text leading-relaxed">{{ aiResult.summary }}</p>
           </div>
 

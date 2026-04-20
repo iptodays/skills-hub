@@ -25,6 +25,14 @@
       "csp": null
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW51c2VkX3B1YmtleV9mb3JfZGV2ZWxvcG1lbnRfMTIzNDU2Nzg5MAo=",
+      "endpoints": [
+        "https://github.com/iptodays/skills-hub/releases/latest/download/latest.json"
+      ]
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",
@@ -52,7 +60,10 @@
         "type": "downloadBootstrapper"
       },
       "nsis": {
-        "languages": ["SimpChinese", "English"],
+        "languages": [
+          "SimpChinese",
+          "English"
+        ],
         "displayLanguageSelector": false,
         "installMode": "currentUser"
       }

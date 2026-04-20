@@ -539,16 +539,42 @@ fn set_ai_config(app: tauri::AppHandle, config: String) -> Result<(), String> {
     fs::write(dir.join("ai_config.json"), config).map_err(|e| e.to_string())
 }
 
+/// 设置 Dock 图标是否可见 (MacOS 专用)
+#[tauri::command]
+fn set_dock_icon_visible(app: tauri::AppHandle, visible: bool) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        use tauri::ActivationPolicy;
+        if visible {
+            app.set_activation_policy(ActivationPolicy::Regular)
+                .map_err(|e| e.to_string())?;
+        } else {
+            app.set_activation_policy(ActivationPolicy::Accessory)
+                .map_err(|e| e.to_string())?;
+        }
+    }
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            Some(vec![]),
+        ))
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             // ===== 初始化 AI 缓存数据库 =====
             let conn = init_db(app.handle()).expect("无法初始化 AI 缓存数据库");
             app.manage(DbState(Mutex::new(conn)));
 
             // ===== 系统托盘设置 =====
+            // 用中心裁切的 32x32 RGBA bin 数据
+            let tray_icon =
+                tauri::image::Image::new(include_bytes!("../icons/tray-icon.bin"), 32, 32);
+
             let show_item = MenuItem::with_id(app, "show", "显示窗口", true, None::<&str>)?;
             let hide_item = MenuItem::with_id(app, "hide", "隐藏窗口", true, None::<&str>)?;
             let sep = PredefinedMenuItem::separator(app)?;
@@ -556,11 +582,10 @@ pub fn run() {
 
             let menu = Menu::with_items(app, &[&show_item, &hide_item, &sep, &quit_item])?;
 
-            let _tray = TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("Skills Hub")
+            let _tray = TrayIconBuilder::with_id("tray")
+                .icon(tray_icon)
+                // .icon_as_template(true) // 先关闭模板模式，确保显示正常
                 .menu(&menu)
-                // macOS 左键点击直接切换窗口显示，不弹菜单
                 .show_menu_on_left_click(false)
                 .on_tray_icon_event(|tray, event| {
                     // 左键单击：切换窗口显示/隐藏
@@ -628,6 +653,7 @@ pub fn run() {
             delete_ai_cache,
             get_ai_config,
             set_ai_config,
+            set_dock_icon_visible,
         ])
         .run(tauri::generate_context!())
         .expect("Tauri 应用启动失败");
